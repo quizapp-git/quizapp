@@ -18,6 +18,18 @@ export function HelpScreen() {
         <Text style={styles.body}>
           Coins can be converted to PKR and withdrawn when thresholds are met.
         </Text>
+        <Text style={styles.sectionTitle}>Communication and chat stages</Text>
+        <Text style={styles.body}>
+          Communication features unlock in stages. New players start with quick
+          chat only using predefined messages. After enough ads are viewed and
+          quizzes are played, custom text chat unlocks. With more engagement and
+          good behavior, voice chat unlocks for selected areas of the app.
+        </Text>
+        <Text style={styles.body}>
+          This staging helps keep communication safe, reduces abuse, and rewards
+          players who engage fairly with the app. Ad views that unlock
+          communication features also power coins, payouts, and revenue sharing.
+        </Text>
       </View>
     </ScrollView>
   );
@@ -44,4 +56,3 @@ const styles = StyleSheet.create({
     lineHeight: 20
   }
 });
-

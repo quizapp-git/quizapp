@@ -26,8 +26,12 @@ Relevant schema and APIs:
 
 Quiz rules:
 
-- Up to **10 questions** per quiz session.  
-- **Exactly one ad** triggered after each answered question, up to **10 ads**.  
+- Quizzes normally have **10 questions**, with a hard cap of **10 questions** per session.  
+- Each question shows **4 answer choices**.  
+- Players have **5 seconds** to answer each question before it is treated as unanswered/incorrect.  
+- **Exactly one ad** is triggered after each answered or timed‑out question, up to **10 ads**.  
+- After questions 1–8, show a **short interstitial ad**.  
+- After the **9th question**, show a **slightly longer, higher‑value interstitial**.  
 - Ad income is shared with users via coins and PKR.
 
 ## Tech Stack
@@ -74,30 +78,38 @@ Design the following screens.
     - Does not receive `correct_option_index` on the client.  
   - UI:
     - Shows one question at a time.  
-    - Options as tappable buttons.  
+    - Exactly **4 options** as tappable buttons.  
+    - A visible **5‑second countdown timer** per question.  
     - Progress indicator (e.g. “Question 3 of 10”).
 
 Flow per question:
 
-1. User selects an option.  
-2. Call `POST /api/app/quizzes/:id/session/:sessionId/answer` with:
-   - `question_id`, `selected_option_index`, `question_index` (1–10).  
-3. Backend returns whether the answer is correct and optional per‑question reward info.  
-4. Show immediate feedback (correct/incorrect).  
-5. Trigger Ads Module to show an **interstitial ad**:
+1. Start a **5‑second countdown** when the question becomes visible.  
+2. If the user selects an option before the timer expires:  
+   - Call `POST /api/app/quizzes/:id/session/:sessionId/answer` with:  
+     - `question_id`, `selected_option_index`, `question_index` (1–10).  
+3. If the 5‑second timer expires with no selection:  
+   - Treat the question as unanswered/incorrect on the client side.  
+   - Call the same `answer` endpoint with a sentinel value or explicit “no answer” flag, as defined by the backend.  
+4. Backend returns whether the answer is correct and optional per‑question reward info.  
+5. Show immediate feedback (correct/incorrect or “time’s up”).  
+6. Trigger Ads Module to show an **interstitial ad**:
    - Call something like `AdService.showQuizInterstitial(questionIndex, context)`.  
+   - For questions 1–8, use a **short interstitial placement**.  
+   - For the **9th question**, use a **longer, higher‑value interstitial placement**.  
    - Respect `max_ads_per_quiz_session` (10) and `show_ad_after_every_question`.  
    - If ad fails to load or show, gracefully skip it and continue quiz.  
-6. Log ad impression:
+7. Log ad impression:
    - Call `/api/app/quizzes/:id/session/:sessionId/record-ad-impression` or `/api/app/ads/impression`.  
-   - Include `question_index`, provider info, and identifiers for `ad_impressions`.
-7. Move to next question or finish quiz when the last question is answered.
+   - Include `question_index`, provider info, placement type (short vs long), and identifiers for `ad_impressions`.  
+8. Move to next question or finish quiz when the last question is answered or timed out.
 
 Constraints:
 
-- Max 10 questions per session.  
-- Exactly one ad opportunity per answered question, up to 10.  
-- Ads appear **after** answering, never before or between screens arbitrarily.
+- Max 10 questions per session, with quizzes normally using all 10.  
+- Exactly one ad opportunity per answered or timed‑out question, up to 10.  
+- Ads appear **after** each question (and its 5‑second window), never before or between screens arbitrarily.  
+- The **9th question** always triggers the longer interstitial variant when ads are enabled.
 
 ### 3. Quiz Completion & Results
 
@@ -168,4 +180,3 @@ From this prompt, generate:
 3. Example interaction patterns with `/api/app/quizzes/...` endpoints.  
 4. Ads integration notes showing how to enforce 10 questions and 10 ads max per session.  
 5. Error handling and UX patterns so gameplay remains smooth even when ads or network calls fail.
-

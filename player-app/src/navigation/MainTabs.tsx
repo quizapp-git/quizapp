@@ -4,11 +4,13 @@ import { HomeStack } from "./HomeStack";
 import { WalletStack } from "./WalletStack";
 import { LeaderboardStack } from "./LeaderboardStack";
 import { ProfileStack } from "./ProfileStack";
+import { FriendsStack } from "./FriendsStack";
 
 export type MainTabParamList = {
   HomeTab: undefined;
   WalletTab: undefined;
   LeaderboardTab: undefined;
+  FriendsTab: undefined;
   ProfileTab: undefined;
 };
 
@@ -33,6 +35,11 @@ export function MainTabs() {
         options={{ title: "Leaderboard" }}
       />
       <Tab.Screen
+        name="FriendsTab"
+        component={FriendsStack}
+        options={{ title: "Friends" }}
+      />
+      <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
         options={{ title: "Profile" }}
@@ -40,4 +47,3 @@ export function MainTabs() {
     </Tab.Navigator>
   );
 }
-

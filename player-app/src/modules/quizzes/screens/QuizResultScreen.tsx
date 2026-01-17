@@ -6,12 +6,31 @@ import type { HomeStackParamList } from "../../../navigation/HomeStack";
 type Props = NativeStackScreenProps<HomeStackParamList, "QuizResult">;
 
 export function QuizResultScreen({ navigation, route }: Props) {
-  const { sessionId } = route.params;
+  const {
+    sessionId,
+    quizId,
+    finalScore,
+    coinsEarned,
+    coinsBalance,
+    lifetimeEarnedCoins
+  } = route.params;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Quiz Result</Text>
       <Text style={styles.body}>Session id: {sessionId}</Text>
+      <Text style={styles.body}>Score: {finalScore}</Text>
+      <Text style={styles.body}>Coins earned: {coinsEarned}</Text>
+      <Text style={styles.body}>
+        Current balance: {coinsBalance.toLocaleString()}
+      </Text>
+      <Text style={styles.body}>
+        Lifetime earned coins: {lifetimeEarnedCoins.toLocaleString()}
+      </Text>
+      <Button
+        title="Play again"
+        onPress={() => navigation.replace("QuizSession", { quizId })}
+      />
       <Button
         title="Back to quizzes"
         onPress={() => navigation.popToTop()}
@@ -36,4 +55,3 @@ const styles = StyleSheet.create({
     fontSize: 16
   }
 });
-

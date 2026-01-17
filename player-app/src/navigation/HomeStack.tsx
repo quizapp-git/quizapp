@@ -12,9 +12,16 @@ export type HomeStackParamList = {
   };
   QuizSession: {
     quizId: string;
+    voiceRoomId?: string;
+    voiceRoomCode?: string;
   };
   QuizResult: {
     sessionId: string;
+    quizId: string;
+    finalScore: number;
+    coinsEarned: number;
+    coinsBalance: number;
+    lifetimeEarnedCoins: number;
   };
 };
 
